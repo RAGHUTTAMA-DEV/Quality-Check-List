@@ -30,7 +30,7 @@ export async  function GetStage(req,res){
 
 export async function UpdateStage(req,res){
     try{
-        const updateData=await StageModel.findByIdAndUpdate(req.params.id,req.body);
+        const updateData=req.body;
 
         const Updated=await StageModel.findByIdAndUpdate(req.params.id,{
             $set:updateData},{new:true},
