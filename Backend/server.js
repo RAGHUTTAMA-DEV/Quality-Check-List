@@ -15,7 +15,7 @@ app.use("/api/auth",authRouter);
 async function main(){
     await ConnectDb();
     app.listen(process.env.PORT,()=>{
-        console.log("Server Started");
+        console.log("Server Started on port 5000");
     })
 }
 
