@@ -21,11 +21,7 @@ const userSchema=new schema({
             enum:["admin","supervisior","operator"],
             default:"operator"
     },
-<<<<<<< HEAD
     createAt:{
-=======
-    createAt:{  
->>>>>>> master
         type:Date,
         default:Date.now()
     }
