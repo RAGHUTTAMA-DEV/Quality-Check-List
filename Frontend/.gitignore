@@ -1,4 +1,4 @@
-# Logs
+git commit -m "nothing but"# Logs
 logs
 *.log
 npm-debug.log*
