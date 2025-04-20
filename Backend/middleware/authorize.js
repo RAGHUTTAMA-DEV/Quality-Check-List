@@ -23,7 +23,7 @@ export function authorize(...allowedRoles) {
         return res.status(403).json({ message: 'Forbidden - insufficient permissions' });
       }
 
-      req.user = user; // attach full user object to request
+      req.user = user; // attach full user object to requests
       next();
 
     } catch (err) {
