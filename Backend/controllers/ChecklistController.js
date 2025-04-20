@@ -4,7 +4,7 @@ export function CreateCheckList(req,res){
 
    }catch(err){
       console.log(err);
-      res.json({message:"Error"});
+      res.json({message:"Erroar"});
    }
 }
 
