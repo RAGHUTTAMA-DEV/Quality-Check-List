@@ -14,7 +14,7 @@ async function DeleteUser(req,res){
 
 }
 
-module.exports={
+export{
     GetAllUsers,
     GetUser,
     UpdateUser,
