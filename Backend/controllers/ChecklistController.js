@@ -1,6 +1,13 @@
-
-export function CreateCheckList(req,res){
+import CheckListModel from "../models/CheckList.js";
+export async function CreateCheckList(req,res){
    try{
+     const {content,isChecked,coments,Image}=req.body;
+
+     await CheckListModel.create({
+        content,
+        isChecked,
+        comments
+     });
 
    }catch(err){
       console.log(err);
