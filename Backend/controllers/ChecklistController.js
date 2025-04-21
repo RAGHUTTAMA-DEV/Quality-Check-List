@@ -42,12 +42,11 @@ export async function GetCheckList(req,res){
 
 export async function UpdateCheckList(req,res){
    try{
-    const {content,isChecked,coments,Image,checkedBy}=req.body;
+    const updateData=req.body;
     const checkList=await CheckListModel.findByIdAndUpdate(req.params.id,{
-        content,
-        isChecked,
-        coments,checkedBy,Image
-    });
+        $set:updateData
+        ,message:"CheckList Updated"
+    })
     res.json({checkList,message:"CheckList Updated"});
 
 

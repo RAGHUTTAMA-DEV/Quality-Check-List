@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const schema=mongoose.Schema;
 
 const CheckList=new schema({
-    content:{
+    content:{       
         type:String,
         required:true
     },
