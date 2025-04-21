@@ -38,3 +38,5 @@ async function GetLogs(req,res){
     }
 }
 
+
+export {CreateLog,GetAllLogs,GetLogs};
