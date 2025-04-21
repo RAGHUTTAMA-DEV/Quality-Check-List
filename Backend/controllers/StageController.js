@@ -1,5 +1,5 @@
 import StageModel from "../models/ProductStage.js";
-import UserModel from "../models/UserSchema.js";
+
 export async function GetAllStages(req,res){
      try{
         const stages=await StageModel.find();
@@ -38,7 +38,7 @@ export async function UpdateStage(req,res){
             $set:updateData},{new:true},
         );
 
-        res.status(200).json(Updated,{message:"Stage Updated"});
+        res.status(200).json({Updated,message:"Stage Updated"});
 
 
     }catch(err){

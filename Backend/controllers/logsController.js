@@ -1,4 +1,4 @@
-import Tracker from "../models/Tracker";
+import Tracker from "../models/Tracker.js";
 
 
 async function CreateLog(req,res){

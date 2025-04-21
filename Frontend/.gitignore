@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # Logs
-=======
-git commit -m "nothing but"# Logs
->>>>>>> master
 logs
 *.log
 npm-debug.log*

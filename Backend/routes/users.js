@@ -1,15 +1,15 @@
 import express from 'express';
-import {getAllUsers,getUser,updateUser,deleteUser} from '../controllers/usersController.js';
+import {GetAllUsers,GetUser,UpdateUser,DeleteUser} from '../controllers/usersController.js';
 import { authorize,auth } from '../middleware/authorize.js';
 
 const router=express.Router();
 
-router.get('/',auth,authorize('admin'),getAllUsers);
-router.get('/:id',auth,authorize('admin','supervisor'),getUser);
+router.get('/',auth,authorize('admin'),GetAllUsers);
+router.get('/:id',auth,authorize('admin','supervisor'),GetUser);
 
-router.put('/:id', auth, authorize('admin'), auth, authorize('admin'),updateUser);
+router.put('/:id', auth, authorize('admin'), auth, authorize('admin'),UpdateUser);
 
-router.delete('/:id', auth, authorize('admin'),deleteUser);
+router.delete('/:id', auth, authorize('admin'),DeleteUser);
 
 
 export default router;

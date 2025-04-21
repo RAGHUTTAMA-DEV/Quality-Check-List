@@ -1,4 +1,4 @@
-import CheckListStage from "../models/CheckListStage";
+import CheckListStage from "../models/CheckListStage.js";
 
 async function PostCheckListItem(req,res){
    try{

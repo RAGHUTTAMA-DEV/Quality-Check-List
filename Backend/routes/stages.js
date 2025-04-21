@@ -1,6 +1,6 @@
 import express from 'express';
-import { GetAllStages,GetStage,DeleteStage,UpdateStage,CreateStage } from '../controllers/StageController';
-import  { authorize,auth } from '../middleware/authorize';
+import { GetAllStages,GetStage,DeleteStage,UpdateStage,CreateStage } from '../controllers/StageController.js';
+import  { authorize,auth } from '../middleware/authorize.js';
 const router=express.Router();
 
 router.post('/',auth,authorize("admin","supervisor"),CreateStage);
