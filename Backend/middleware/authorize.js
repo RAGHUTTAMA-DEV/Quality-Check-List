@@ -33,19 +33,26 @@ export function authorize(...allowedRoles) {
   };
 }
 
-export function auth(req,res,next){
-    try{
-        const authHeader = req.headers.authorization;
-        if(!authHeader || !authHeader.startsWith('Bearer ')){
-            return res.status(401).json({message:"Missing or invalid token"});
-        }
-        const token = authHeader.split(" ")[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-
-    }catch(err){
-        console.log(err);
-        res.json(({message:"Something went wrong"}));
+export async function auth(req, res, next) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: "Missing or invalid token" });
     }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await UserModel.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    console.log(err);
+    res.status(401).json({ message: "Something went wrong in auth middleware" });
+  }
 }
+

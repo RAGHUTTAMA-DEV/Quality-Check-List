@@ -44,6 +44,9 @@ async function SignIn(req,res){
         }
         const token=jwt.sign({id:user._id},process.env.JWT_SECRET);
 
+        const { password: _, ...safeUser } = user._doc;
+         res.status(200).json({ token, user: safeUser });
+
     }catch(err){
         console.log(err);
         res.status(500).json({message:"Something went wrong"});
@@ -64,7 +67,5 @@ async function Getme(req,res){
         return;
     }
 }
-module.exports={
-    SignUp,
-    SignIn,Getme
-}
+
+export {SignUp,SignIn,Getme};

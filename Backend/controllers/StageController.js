@@ -20,7 +20,9 @@ export async  function GetStage(req,res){
         if(!stage){
             return res.status(404).json({message:"Stage not found"});
         }
-        res.status(200).json(stage,{message:"Stage Found"});
+        res.status(200).json({
+            stage,message:"Stage Found"
+        });
 
     }catch(err){
         console.log(err);
@@ -47,7 +49,7 @@ export async function UpdateStage(req,res){
 
 export async function DeleteStage(req,res){
      try{
-        const stage=await StageModel.findOneAndDelete(req.params.id);
+        const stage=await StageModel.findByIdAndDelete(req.params.id);
         if(!stage){
             return res.status(404).json({message:"Stage not found"});
         }
@@ -61,7 +63,7 @@ export async function DeleteStage(req,res){
 
 export async function CreateStage(req,res){
     try{
-        const {name,description,status,statedAt,assignedTo}=req.body;
+        const {name,description,status,startedAt ,assignedTo}=req.body;
          const stage=await StageModel.create(req.body);
 
          res.status(201).json(stage,{message:"Stage Created"});
