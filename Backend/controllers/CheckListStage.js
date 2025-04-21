@@ -49,9 +49,6 @@ async function MarkChecListItem(req,res){
             }
         })
         res.status(200).json({message:"CheckListStage Updated"});
-        
-
-
     }catch(err){
         console.log(err);
         res.status(500).json({message:"Internal Server Error"});

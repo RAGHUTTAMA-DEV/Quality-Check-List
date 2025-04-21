@@ -11,7 +11,7 @@ const trackerSchema=new schema({
         type:String,
         required:true
     },
-    messgage:{
+    message:{
         type:String,
         required:true
     },
