@@ -13,6 +13,7 @@ import {
 import { motion } from "framer-motion";
 import { Eye, EyeOff, CheckCircle, User, Mail, Lock } from "lucide-react";
 import { Toaster, toast } from "sonner";
+import axios from "axios";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ export default function SignUp() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  function apicall() {
+  async function apicall() {
     setIsLoading(true);
     
     // Validate passwords match
@@ -41,15 +42,54 @@ export default function SignUp() {
       return;
     }
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log("apicall", formData);
-      toast.success("Account created!", {
-        description: "You've successfully signed up.",
+    try {
+      // Match the exact field names expected by the backend
+      const response = await axios.post('http://localhost:3000/api/auth/signup', {
+        username: formData.name,
+        email: formData.email,
+        password: formData.password
+        // Note: role is not being sent from the frontend but is expected in the backend
+        // You might want to add a default role or add role selection to your form
       });
+      
+      // The backend returns token and user object on success
+      if (response.data.token && response.data.user) {
+        toast.success("Account created!", {
+          description: "You've successfully signed up.",
+        });
+        
+        // Store the token in localStorage for authentication
+        localStorage.setItem('token', response.data.token);
+        
+        // Redirect to login or dashboard
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
+      } else {
+        toast.error("Account creation failed!", {
+          description: "Unexpected response from server.",
+        });
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        // The backend returns specific error messages
+        const errorMessage = error.response.data.message || "An error occurred during signup.";
+        toast.error("Account creation failed!", {
+          description: errorMessage,
+        });
+        console.error("Signup error details:", error.response.data);
+      } else {
+        toast.error("Account creation failed!", {
+          description: "Network error or server is unavailable.",
+        });
+        console.error("Signup error:", error);
+      }
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   }
+  
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
