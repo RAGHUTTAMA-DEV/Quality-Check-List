@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Eye, EyeOff, CheckCircle } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useAuth } from '@/hooks/AuthContext'
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Properly use the useAuth hook inside the component
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formdata, setFormData] = useState({
@@ -35,10 +37,16 @@ export default function Login() {
 
       
       if (response.ok) {
+        const data = await response.json();
+        console.log(response);
+        const token = data.token;
+        const user = data.user;
+        
+        // Call the login function from the auth context
+        login(token, user);
+        
         toast.success("Login Successful");
         setTimeout(() => navigate('/dashboard'), 1000);
-        const token:any=response.headers.get('Authorization');
-        localStorage.setItem('token', token);
       } else {
         toast.error("Login Failed. Please check your credentials.");
       }
