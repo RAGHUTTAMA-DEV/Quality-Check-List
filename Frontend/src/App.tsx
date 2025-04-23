@@ -21,6 +21,7 @@ function App() {
             {/* <Route path='/checklist' element={<ChecklistManagement />} /> */}
             {/* Add more routes as needed */}
             <Route path='/users' element={<PrivateProvider roles={['admin','operator']} ><UserTable/></PrivateProvider>} />
+            
           </Routes>
         </AuthProvider>
       </BrowserRouter>

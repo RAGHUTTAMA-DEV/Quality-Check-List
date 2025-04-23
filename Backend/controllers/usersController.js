@@ -12,15 +12,22 @@ async function GetAllUsers(req,res){
     }
 }
 
-async function GetUser(req,res){
-     try{
-        const user=await UserModel.findById(req.params.id);
-        res.status(200).json({user,message:"User Found"});
-     }catch(err){
+async function GetUser(req, res) {
+    try {
+        // Fix: Use the username from route params correctly
+        const user = await UserModel.findOne({ username: req.params.username });
+        console.log(user);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        res.status(200).json({ user, message: "User Found" });
+    } catch (err) {
         console.log(err);
-        res.status(500).json({message:"Something went wrong"})
-     }
+        res.status(500).json({ message: "Something went wrong" });
+    }
 }
+
 
 async function UpdateUser(req,res){
     try{
