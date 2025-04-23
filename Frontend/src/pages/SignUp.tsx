@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, CheckCircle, User, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, User, Mail, Lock, } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import axios from "axios";
 
@@ -21,6 +21,7 @@ export default function SignUp() {
     email: "",
     password: "",
     confirmPassword: "",
+    role:""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -209,6 +210,11 @@ export default function SignUp() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                 />
+              </div>
+              <Label htmlFor="Role">Role</Label>
+              <div>
+                 {/*Some iconss*/}
+                 <Input id="role" name="role" placeholder="Role" className="pl-10" value={formData.role} onChange={handleChange} />
               </div>
             </motion.div>
           </CardContent>

@@ -13,7 +13,8 @@ export default defineConfig({
   server: {
     allowedHosts: [
       'charges-tested-calendars-miracle.trycloudflare.com',
-      'localhost'
+      'localhost',
+      'limitation-improving-pages-sudden.trycloudflare.com'
     ]
   }
 });

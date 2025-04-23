@@ -42,6 +42,7 @@ export default function Login() {
         const token = data.token;
         const user = data.user;
         
+        
         // Call the login function from the auth context
         login(token, user);
         

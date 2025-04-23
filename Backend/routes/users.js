@@ -4,7 +4,7 @@ import { authorize,auth } from '../middleware/authorize.js';
 
 const router=express.Router();
 
-router.get('/',auth,authorize('admin'),GetAllUsers);
+router.get('/',auth,authorize('admin','operator'),GetAllUsers);
 router.get('/:id',auth,authorize('admin','supervisor'),GetUser);
 
 router.put('/:id', auth, authorize('admin'), auth, authorize('admin'),UpdateUser);
