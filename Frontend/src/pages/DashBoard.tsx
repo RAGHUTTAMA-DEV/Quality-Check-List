@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashBoard() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // For animations using Intersection Observer
@@ -136,7 +138,7 @@ export default function DashBoard() {
                 <motion.button 
                   className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors shadow-lg"
                   whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileTap={{ scale: 0.95 }} onClick={()=>navigate('/signup')}
                 >
                   Get Started
                 </motion.button>
@@ -148,7 +150,7 @@ export default function DashBoard() {
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
                 <img 
-                  src="https://via.placeholder.com/600x400?text=Quality+Checklist+Dashboard" 
+                  src="https://images.unsplash.com/photo-1586282391129-76a6df230234?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400&q=80" 
                   alt="Quality Checklist Dashboard" 
                   className="rounded-lg shadow-xl"
                 />
@@ -281,7 +283,7 @@ export default function DashBoard() {
                 <p className="text-gray-600 italic mb-4">"This platform has transformed how we manage our quality control processes. Highly recommended!"</p>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden mr-4">
-                    <img src="https://via.placeholder.com/48" alt="User Avatar" className="w-full h-full object-cover" />
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800">Sarah Johnson</h4>
@@ -299,7 +301,7 @@ export default function DashBoard() {
                 <p className="text-gray-600 italic mb-4">"The analytics and reporting features have given us insights we never had before. Game changer!"</p>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden mr-4">
-                    <img src="https://via.placeholder.com/48" alt="User Avatar" className="w-full h-full object-cover" />
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Avatar" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800">Michael Chen</h4>
