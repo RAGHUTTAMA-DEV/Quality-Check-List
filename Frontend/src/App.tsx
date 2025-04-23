@@ -5,7 +5,8 @@ import Login from './pages/login/Login'
 import { AuthProvider } from './hooks/AuthContext'
 import PrivateProvider from './PrivateRouter'
 import DashBoard from './pages/DashBoard'
-import Demo from './pages/demo'
+import UserTable from './pages/admin/UserTable'
+
 function App() {
   return (
     <div>
@@ -18,8 +19,8 @@ function App() {
             <Route path='/' element={<DashBoard />} />
             {/* Add your CheckList-Management route here, for example: */}
             {/* <Route path='/checklist' element={<ChecklistManagement />} /> */}
-            <Route path='/demo' element={<Demo />} />
-            <Route path='/checklist' element={<PrivateProvider><Signup /></PrivateProvider>} />
+            {/* Add more routes as needed */}
+            <Route path='/users' element={<PrivateProvider roles={['admin','operator']} ><UserTable/></PrivateProvider>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

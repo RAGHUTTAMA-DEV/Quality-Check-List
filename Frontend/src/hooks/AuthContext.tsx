@@ -2,9 +2,9 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 
 // Define interfaces for better type safety
 interface User {
-  id: string;
+  _id: string;
   email: string;
-  role: string;
+  role: string; 
 }
 
 interface AuthContextType {

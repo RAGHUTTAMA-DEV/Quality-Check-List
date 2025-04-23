@@ -46,7 +46,7 @@ export default function Login() {
         login(token, user);
         
         toast.success("Login Successful");
-        setTimeout(() => navigate('/dashboard'), 1000);
+        setTimeout(() => navigate('/users'), 1000);
       } else {
         toast.error("Login Failed. Please check your credentials.");
       }
