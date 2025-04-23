@@ -33,7 +33,7 @@ async function UpdateUser(req,res){
     try{
         const {username,email,password,role}=req.body;
         const user = await UserModel.findByIdAndUpdate(
-            req.params.id,
+            req.params.username,
             { username, email, password, role },
             { new: true }
           );

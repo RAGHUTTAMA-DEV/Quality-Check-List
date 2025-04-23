@@ -20,7 +20,8 @@ export default function UserTable() {
     const [err, setErr] = useState<string | null>(null);
     const { token } = useAuth();
     const [user, setUser] = useState<User | null>(null); // Fixed initialization
-    const [username, setUsername] = useState(''); // Added missing username state
+    const [username, setUsername] = useState('');
+    const [needUpdate, setNeedUpdate] = useState(false);
 
     async function GetAllUsers() {
         try {
@@ -75,6 +76,26 @@ export default function UserTable() {
           console.log(err);
           setErr(err.response?.data?.message || err.message || "Something went wrong");
           setUser(null);
+        }
+      }
+
+      async function DeleteUser(){
+         if (!username.trim()) {
+            setErr("Username cannot be empty");
+            return;
+        }
+        try{
+            const response=await axios.delete(`http://localhost:3000/api/users/delete/${username}`,{
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log(response.data);
+
+
+        }catch(err:any){
+            setErr(err.response?.data?.message || err.message || "Failed to delete user");
+            console.log(err);
         }
       }
       
@@ -138,6 +159,108 @@ export default function UserTable() {
                         )}
                     </motion.div>
                 </motion.div>
+
+                <motion.div className="mt-8 border-t pt-6">
+                      <h2 className="text-xl font-semibold mb-4">Update User Role</h2>
+                      <Button onClick={() => setNeedUpdate(!needUpdate)}>
+                        {needUpdate ? "Cancel Update" : "Update User"}
+                      </Button>
+                      {needUpdate && <UpdateUser token={token || ""} />}
+                </motion.div>
+
+               
+
+                <motion.div>
+                     <h2 className="text-xl font-semibold mb-4">Delete User</h2>
+                     <motion.div>
+                        <motion.button onClick={()=>{
+                            DeleteUser
+                        }}>
+                             Delete User
+                        </motion.button>
+                     </motion.div>
+                </motion.div>
+            </div>
+        </div>
+    )
+}
+
+function UpdateUser({ token }: { token: string }) {
+    const [username, setUsername] = useState('');   
+    const [newRole, setNewRole] = useState('');
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [err, setErr] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+
+    async function Updatecall() {
+        if (!username.trim()) {
+            setErr("Username cannot be empty");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                `http://localhost:3000/api/users/update/${username}`, 
+                {
+                    role: newRole,
+                    password: password,
+                    email: email
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            
+            console.log(response.data);
+            setSuccess("User updated successfully");
+            setErr(null);
+        } catch (error: any) {
+            console.log(error);
+            setErr(error.response?.data?.message || error.message || "Failed to update user");
+            setSuccess(null);
+        }
+    }
+   
+    return (
+        <div className="mt-4 p-4 border rounded-md"> 
+            <div className="flex flex-col gap-4">
+                <Input 
+                    type="text" 
+                    placeholder="Enter username" 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                    className="max-w-xs" 
+                />
+                <Input 
+                    type="text" 
+                    placeholder="Enter new role" 
+                    value={newRole} 
+                    onChange={(e) => setNewRole(e.target.value)} 
+                    className="max-w-xs" 
+                />
+                <Input 
+                    type="password" 
+                    placeholder="Enter password" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    className="max-w-xs" 
+                />
+                <Input 
+                    type="email" 
+                    placeholder="Enter email" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    className="max-w-xs" 
+                />
+                <Button onClick={Updatecall} className="max-w-xs">
+                    Update User
+                </Button>
+                
+                {err && <div className="text-red-500">{err}</div>}
+                {success && <div className="text-green-500">{success}</div>}
             </div>
         </div>
     )
