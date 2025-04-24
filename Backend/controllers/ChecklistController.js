@@ -21,7 +21,7 @@ export async  function GetAllCheckList(req,res){
    try{
     const checkList=await CheckListModel.find();
     res.json({checkList,message:"CheckList Found"});
-
+    console.log(checkList);
    }catch(err){
      console.log(err);
       res.json({message:"Erroar"});

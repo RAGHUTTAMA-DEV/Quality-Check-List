@@ -6,7 +6,7 @@ import { AuthProvider } from './hooks/AuthContext'
 import PrivateProvider from './PrivateRouter'
 import DashBoard from './pages/DashBoard'
 import UserTable from './pages/admin/UserTable'
-
+import CheckList from './pages/Checklist/CheckList'
 function App() {
   return (
     <div>
@@ -21,7 +21,7 @@ function App() {
             {/* <Route path='/checklist' element={<ChecklistManagement />} /> */}
             {/* Add more routes as needed */}
             <Route path='/users' element={<PrivateProvider roles={['admin','operator']} ><UserTable/></PrivateProvider>} />
-            
+            <Route path='/checkList' element={<CheckList/>}/>
           </Routes>
         </AuthProvider>
       </BrowserRouter>
