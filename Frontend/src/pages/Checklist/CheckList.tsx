@@ -55,9 +55,9 @@ export default function CheckList() {
           <h2>Create Checklist</h2>
           <Input placeholder="Enter the content" />
           <Checkbox />
-          <Input placeholder="Enter the content" />
-          <Input placeholder="Enter the content" />
-          <Input placeholder="Enter the content" />
+          <Input placeholder="Enter the comments" />
+          <Input placeholder="Enter the checkBy" />
+          <Input placeholder="Enter the Image" />
         </motion.div>
       </motion.div>
     </div>
