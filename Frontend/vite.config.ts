@@ -10,12 +10,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"), // Alias for `@/`
     },
   },
-  server: {
-    allowedHosts: [
-      
-      'localhost',
-      'limitation-improving-pages-sudden.trycloudflare.com',
-      'cookie-tag-valued-yang.trycloudflare.com'
-    ]
-  }
+ 
 });
