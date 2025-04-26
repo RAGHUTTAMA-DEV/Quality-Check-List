@@ -11,6 +11,17 @@ async function PostCheckListItem(req,res){
    }
 }
 
+async function GetAllCheckListItems(req,res){
+    try{
+        const checkListItems=await CheckListStage.find();
+        res.status(200).json({checkListItems,message:"CheckListItems Fetched"});
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+}
+
 async function UpdateCheckListItem(req,res){
    try{
       const {id}=req.params.id;
@@ -55,4 +66,4 @@ async function MarkChecListItem(req,res){
     }
 }
 
-export {PostCheckListItem,UpdateCheckListItem,DeleteCheckListItem,MarkChecListItem};
+export {PostCheckListItem,UpdateCheckListItem,DeleteCheckListItem,MarkChecListItem,GetAllCheckListItems};
