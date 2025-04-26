@@ -7,6 +7,7 @@ import PrivateProvider from './PrivateRouter'
 import DashBoard from './pages/DashBoard'
 import UserTable from './pages/admin/UserTable'
 import CheckList from './pages/Checklist/CheckList'
+import CheckListForm from './pages/Checklist/CheckListForm'
 function App() {
   return (
     <div>
@@ -22,6 +23,8 @@ function App() {
             {/* Add more routes as needed */}
             <Route path='/users' element={<PrivateProvider roles={['admin','operator']} ><UserTable/></PrivateProvider>} />
             <Route path='/checkList' element={<CheckList/>}/>
+            <Route path='/update' element={<CheckListForm/>}/>
+
           </Routes>
         </AuthProvider>
       </BrowserRouter>
