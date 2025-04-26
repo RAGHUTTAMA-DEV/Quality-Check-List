@@ -1,69 +1,99 @@
 import CheckListModel from "../models/CheckList.js";
-export async function CreateCheckList(req,res){
-   try{
-     const {content,isChecked,coments,Image,checkedBy}=req.body;
 
-     await CheckListModel.create({
-        content,
-        isChecked,
-        coments,checkedBy,Image
-     });
+export async function CreateCheckList(req, res) {
+  try {
+    const { content, isChecked, comments, checkedBy, Image } = req.body;
 
-     res.json({message:"CheckList Created"});
+    const newChecklist = await CheckListModel.create({
+      content,
+      isChecked,
+      comments,
+      checkedBy,
+      Image,
+    });
 
-   }catch(err){
-      console.log(err);
-      res.json({message:"Erroar"});
-   }
+    res.status(201).json({ checklist: newChecklist, message: "Checklist Created" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error creating checklist" });
+  }
 }
 
-export async  function GetAllCheckList(req,res){
-   try{
-    const checkList=await CheckListModel.find();
-    res.json({checkList,message:"CheckList Found"});
-    console.log(checkList);
-   }catch(err){
-     console.log(err);
-      res.json({message:"Erroar"});
-   }
+export async function GetAllCheckList(req, res) {
+  try {
+    const checklists = await CheckListModel.find();
+    res.status(200).json({ checklists, message: "Checklists Found" });
+    console.log(checklists);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error fetching checklists" });
+  }
 }
 
-export async function GetCheckList(req,res){
-      try{
-        const checkList=await CheckListModel.findById(req.params.id);
-        res.json({checkList,message:"CheckList Found"});
+export async function GetCheckList(req, res) {
+  try {
+    const { content } = req.query;
 
-
-      }catch(err){
-         console.log(err);
-        res.json({message:"Erroar"});
-      }
-}
-
-export async function UpdateCheckList(req,res){
-   try{
-    const updateData=req.body;
-    const checkList=await CheckListModel.findByIdAndUpdate(req.params.id,{
-        $set:updateData
-        ,message:"CheckList Updated"
-    })
-    res.json({checkList,message:"CheckList Updated"});
-
-
-   }catch(err){
-     console.log(err);
-      res.json({message:"Erroar"});
-   }
-}
-
-export async function DeleteCheckList(req,res){ 
-    try{ 
-        const checkList=await CheckListModel.findByIdAndDelete(req.params.id);
-        res.json({checkList,message:"CheckList Deleted"});
-
-
-    }catch(err){
-        console.log(err);
-        res.json({message:"Erroar"});
+    if (!content) {
+      return res.status(400).json({ message: "Content query is required" });
     }
+
+    const checklist = await CheckListModel.findOne({ content });
+
+    if (!checklist) {
+      return res.status(404).json({ message: "Checklist not found" });
+    }
+
+    res.status(200).json({ checklist, message: "Checklist Found" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error fetching checklist" });
+  }
+}
+
+export async function UpdateCheckList(req, res) {
+  try {
+    const { content } = req.query;
+    const updateData = req.body;
+
+    if (!content) {
+      return res.status(400).json({ message: "Content query is required" });
+    }
+
+    const checklist = await CheckListModel.findOneAndUpdate(
+      { content },
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!checklist) {
+      return res.status(404).json({ message: "Checklist not found" });
+    }
+
+    res.status(200).json({ checklist, message: "Checklist Updated" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error updating checklist" });
+  }
+}
+
+export async function DeleteCheckList(req, res) {
+  try {
+    const { content } = req.query;
+
+    if (!content) {
+      return res.status(400).json({ message: "Content query is required" });
+    }
+
+    const checklist = await CheckListModel.findOneAndDelete({ content });
+
+    if (!checklist) {
+      return res.status(404).json({ message: "Checklist not found" });
+    }
+
+    res.status(200).json({ checklist, message: "Checklist Deleted" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error deleting checklist" });
+  }
 }
