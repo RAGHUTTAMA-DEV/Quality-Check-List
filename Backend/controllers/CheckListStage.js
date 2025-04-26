@@ -50,7 +50,7 @@ async function DeleteCheckListItem(req,res){
     }
 }
 
-async function MarkChecListItem(req,res){
+async function MarkCheckListItem(req,res){
     try{
         const {itemsId}=req.params.itemsId;
         const {mark}=req.body;

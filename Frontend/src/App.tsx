@@ -8,7 +8,8 @@ import DashBoard from './pages/DashBoard'
 import UserTable from './pages/admin/UserTable'
 import CheckList from './pages/Checklist/CheckList'
 import CheckListForm from './pages/Checklist/CheckListForm'
-
+import ItemsGet from './pages/items/itemsGet'
+import ItemsUpdate from './pages/items/UpdatingItems'
 function App() {
   return (
     <div>
@@ -25,7 +26,8 @@ function App() {
             <Route path='/users' element={<PrivateProvider roles={['admin','operator']} ><UserTable/></PrivateProvider>} />
             <Route path='/checkList' element={<CheckList/>}/>
             <Route path='checkList/update' element={<CheckListForm/>}/>
-            
+            <Route path='/items' element={<ItemsGet/>}/>
+            <Route path='/items/update' element={<ItemsUpdate/>}/>
 
           </Routes>
         </AuthProvider>
