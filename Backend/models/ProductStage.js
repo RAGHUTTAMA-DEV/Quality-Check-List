@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { create } from "qrcode";
+
 import UserModel from "./UserSchema.js";
 
 const schema=mongoose.Schema;
