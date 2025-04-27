@@ -22,9 +22,11 @@ app.use('/api/checklist',checkListRouter);
 app.use('/api/logs',logsRouter);
 app.use('/api/items',itemsRouter);
 
+const PORT=process.env.PORT || 5000;
+
 async function main(){
     await ConnectDb();
-    app.listen(process.env.PORT,()=>{
+    app.listen(PORT,()=>{
         console.log("Server Started");
     })
 }
