@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {PostCheckListItem,UpdateCheckListItem,DeleteCheckListItem,MarkChecListItem,GetAllCheckListItems} from '../controllers/CheckListStage.js';
+import {PostCheckListItem,UpdateCheckListItem,DeleteCheckListItem,MarkCheckListItem,GetAllCheckListItems} from '../controllers/CheckListStage.js';
 const router=express.Router();
 
 router.post('/checkList/:id/items',PostCheckListItem)
@@ -11,6 +11,6 @@ router.get('/items',GetAllCheckListItems)
 
 router.delete('/items/:id',DeleteCheckListItem)
 
-router.post('/items/:itemsId/mark',MarkChecListItem);
+router.post('/items/:itemsId/mark',MarkCheckListItem);
 
 export default router;
