@@ -1,5 +1,5 @@
 import express from 'express';
-import CheckListModel from '../models/CheckList.js';
+
 import {PostCheckListItem,UpdateCheckListItem,DeleteCheckListItem,MarkChecListItem,GetAllCheckListItems} from '../controllers/CheckListStage.js';
 const router=express.Router();
 
