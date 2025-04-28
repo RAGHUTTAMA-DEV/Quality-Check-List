@@ -1,87 +1,79 @@
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useAuth } from '@/hooks/AuthContext';
+import { Input } from '@/components/ui/input'
+import axios from 'axios'
+import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/hooks/AuthContext'
 
 export default function ItemsGet() {
-    const [items, setItems] = useState<any[]>([]);  // <--- typed as array
-    const [isErr, setIsErr] = useState(false);
-    const navigate = useNavigate();
-    
-    const {token} = useAuth();
+  const [items, setItems] = useState<any[]>([]);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [stage, setStage] = useState('');
+  const [isErr, setIsErr] = useState(false);
+  const navigate = useNavigate();
+  const { token } = useAuth();
 
-    async function getAllItems() {
-        if (!token) return; // <--- wait for token to be ready
-
-        try {
-            const response = await axios.get("http://localhost:3000/api/items/items", {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            const fetchedItems = response.data.items || []; // fallback to empty array
-            setItems(fetchedItems);
-        } catch (err) {
-            console.log(err);
-            setIsErr(true);
+  async function getAllItems() {
+    try {
+      const response = await axios.get("http://localhost:3000/api/items/items", {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      });
+      setItems(response.data.items || []);
+    } catch (err) {
+      console.log(err);
+      setIsErr(true);
     }
+  }
 
-    async function PostItem(){
-        try{
-            const response=await axios.post('http://localhost',{
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            console.log(response.data);
-        }catch(err){
-            console.log(err);
-            setIsErr(true);
+  async function PostItem() {
+    try {
+      const response = await axios.post("http://localhost:3000/api/items/create", {
+        name,
+        description,
+        stage
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      });
+      console.log(response.data);
+      getAllItems(); // refresh list
+    } catch (err) {
+      console.log(err);
+      setIsErr(true);
     }
+  }
 
-    return (
-        <motion.div>
-            <motion.div>
-                <motion.h1>Items</motion.h1>
-                <motion.div>
-                    <motion.button onClick={getAllItems}>
-                        Get all Items
-                    </motion.button>
-                    {isErr && (
-                        <motion.h1>Error</motion.h1>
-                    )}
-                    <ul>
-                        {items?.map((item, index) => (
-                            <li key={index}>
-                                {item.name || "Unnamed item"} {/* Be safe */}
-                            </li>
-                        ))}
-                    </ul>
-                </motion.div>
+  return (
+    <motion.div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Items Management</h1>
 
-                <motion.div>
-                    <h1>Add Item</h1>
-                    <Input placeholder='Enter Item Name' />
-                    <Input placeholder='Enter items ' />
-                    <Input placeholder='Enter stage ' />
-                    <Button onClick={PostItem}/>
-                </motion.div>
+      <Button onClick={getAllItems}>Get All Items</Button>
 
-                <motion.div>
-                     
-                </motion.div>
+      {isErr && <motion.div className="text-red-500 mt-4">Something went wrong.</motion.div>}
 
-                <motion.div>
-                    <motion.button onClick={() => navigate("/items/update")}>
-                        Update the Item
-                    </motion.button>
-                </motion.div>   
-            </motion.div>
-        </motion.div>
-    );
+      <ul className="my-4">
+        {items.map((item, index) => (
+          <li key={index}>{item.name || "Unnamed Item"}</li>
+        ))}
+      </ul>
+
+      <motion.div className="space-y-2 mt-8">
+        <h2 className="text-xl font-semibold">Add New Item</h2>
+        <Input placeholder="Enter Item Name" onChange={(e) => setName(e.target.value)} />
+        <Input placeholder="Enter Item Description" onChange={(e) => setDescription(e.target.value)} />
+        <Input placeholder="Enter Stage" onChange={(e) => setStage(e.target.value)} />
+
+        <Button onClick={PostItem}>Add Item</Button>
+      </motion.div>
+
+      <motion.div className="mt-6">
+        <Button onClick={() => navigate("/items/update")}>Update an Item</Button>
+      </motion.div>
+    </motion.div>
+  );
 }
