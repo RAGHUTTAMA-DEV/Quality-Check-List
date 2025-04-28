@@ -59,6 +59,7 @@ export default function ItemsGet() {
       <ul className="my-4">
         {items.map((item, index) => (
           <li key={index}>{item.name || "Unnamed Item"}</li>
+          
         ))}
       </ul>
 

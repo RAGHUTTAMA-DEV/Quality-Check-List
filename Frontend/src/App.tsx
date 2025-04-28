@@ -10,6 +10,7 @@ import CheckList from './pages/Checklist/CheckList'
 import CheckListForm from './pages/Checklist/CheckListForm'
 import ItemsGet from './pages/items/itemsGet'
 import ItemsUpdate from './pages/items/UpdatingItems'
+import Tracker from './pages/Tracker/Tracker'
 function App() {
   return (
     <div>
@@ -28,7 +29,7 @@ function App() {
             <Route path='checkList/update' element={<CheckListForm/>}/>
             <Route path='/items' element={<ItemsGet/>}/>
             <Route path='/items/update' element={<ItemsUpdate/>}/>
-
+            <Route path='/tracker' element={<Tracker/>}/>
           </Routes>
         </AuthProvider>
       </BrowserRouter>
