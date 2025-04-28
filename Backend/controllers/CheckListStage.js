@@ -24,9 +24,9 @@ async function GetAllCheckListItems(req,res){
 
 async function UpdateCheckListItem(req,res){
    try{
-      const {id}=req.params.id;
+      const {title}=req.params.title;
       const updateItems=req.body;
-      await CheckListStage.findByIdAndUpdate(id,{
+      await CheckListStage.findByIdAndUpdate(title,{
         $set:updateItems
       })
 
@@ -40,8 +40,8 @@ async function UpdateCheckListItem(req,res){
 
 async function DeleteCheckListItem(req,res){
     try{
-        const {id}=req.params.id;
-        await CheckListStage.findByIdAndDelete(id);
+        const {title}=req.params.title;
+        await CheckListStage.findByIdAndDelete(title);
 
 
     }catch(err){
@@ -52,9 +52,9 @@ async function DeleteCheckListItem(req,res){
 
 async function MarkCheckListItem(req,res){
     try{
-        const {itemsId}=req.params.itemsId;
+        const {title}=req.params.title;
         const {mark}=req.body;
-        await CheckListStage.findByIdAndUpdate(itemsId,{
+        await CheckListStage.findOneAndUpdate(itemsId,{
             $set:{
                 mark
             }
