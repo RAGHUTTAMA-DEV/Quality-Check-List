@@ -13,7 +13,7 @@ export default function Tracker() {
   const [stage, setStage] = useState('');
   const [logs, setLogs] = useState<any[]>([]);
   const [isErr, setIsErr] = useState(false);
-
+  const [log,setlog]=useState<any[]>([])
   async function CreateCall() {
     try {
       const response = await axios.post('http://localhost:3000/api/logs/create', 
@@ -51,6 +51,24 @@ export default function Tracker() {
       setIsErr(true);
     }
   }
+  async function getcall(){
+    try{
+      const response=await axios.get('http://localhost:3000/api/logs/:name',{
+        headers:{
+          Authorization:`Bearer ${token}`
+        },
+        params:{
+          name:name
+        }
+      })
+      console.log(response.data);
+      setlog(response.data.logs)
+      
+  }catch(err){
+      console.error(err);
+      setIsErr(true);
+    }
+  }
 
   return (
     <motion.div className="p-6">
@@ -82,7 +100,14 @@ export default function Tracker() {
         {isErr && (
           <div className="text-red-500 mt-4">Something went wrong.</div>
         )}
+
+        <motion.div>
+             <Input placeholder='Get  the log by its name'/>
+              <Button onClick={getcall}>Get Log</Button>
+        </motion.div>
       </motion.div>
     </motion.div>
+
+   
   );
 }

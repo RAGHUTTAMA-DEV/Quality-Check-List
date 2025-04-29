@@ -1,7 +1,6 @@
 import express from 'express';
-import { CreateLog, GetAllLogs, GetLogs } from "../controllers/TrackerController.js";
 import { auth, authorize } from "../middleware/authorize.js";
-
+import { CreateLog, GetAllLogs, GetLogs } from "../controllers/logsController.js";
 const router = express.Router();
 
 router.post('/create', auth, authorize('admin', 'operator'), CreateLog);

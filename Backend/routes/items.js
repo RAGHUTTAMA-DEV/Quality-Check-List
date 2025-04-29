@@ -1,16 +1,27 @@
 import express from 'express';
+import {
+  PostCheckListItem,
+  UpdateCheckListItem,
+  GetAllCheckListItems,
+  DeleteCheckListItem,
+  MarkCheckListItem
+} from '../controllers/CheckListStage.js';
 
-import {PostCheckListItem,UpdateCheckListItem,DeleteCheckListItem,MarkCheckListItem,GetAllCheckListItems} from '../controllers/CheckListStage.js';
-const router=express.Router();
+const router = express.Router();
 
-router.post('/checklist',PostCheckListItem)
+// Create a new item
+router.post('/', PostCheckListItem);
 
-router.put('/update/:title',UpdateCheckListItem)
+// Update an item by title
+router.put('/update/:title', UpdateCheckListItem);
 
-router.get('/',GetAllCheckListItems)
+// Get all items
+router.get('/', GetAllCheckListItems);
 
-router.delete('delete/:title',DeleteCheckListItem)
+// Delete an item by title - fixed the missing leading slash
+router.delete('/delete/:title', DeleteCheckListItem);
 
-router.post('/mark/:title',MarkCheckListItem);
+// Mark an item by title
+router.post('/mark/:title', MarkCheckListItem);
 
 export default router;
