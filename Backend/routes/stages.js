@@ -6,7 +6,7 @@ const router=express.Router();
 router.post('/',auth,authorize("admin","supervisor"),CreateStage);
 
 router.get('/',auth,GetAllStages);
-
+//id is to changed by name or any other unique identifier
 router.get('/:id',auth,GetStage)
 
 router.put('/:id',auth,authorize("admin","supervisor"),UpdateStage);

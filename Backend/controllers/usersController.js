@@ -28,7 +28,7 @@ async function GetUser(req, res) {
     }
 }
 
-
+//Still have modifie this
 async function UpdateUser(req,res){
     try{
         const {username,email,password,role}=req.body;

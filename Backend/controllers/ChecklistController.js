@@ -32,7 +32,7 @@ export async function GetAllCheckList(req, res) {
 
 export async function GetCheckList(req, res) {
   try {
-    const { content } = req.query;
+    const { content } = req.params;
 
     if (!content) {
       return res.status(400).json({ message: "Content query is required" });

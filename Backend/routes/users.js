@@ -7,7 +7,7 @@ const router=express.Router();
 router.get('/',auth,authorize('admin','operator'),GetAllUsers);
 router.get('/get/:username',auth,authorize('admin','supervisor',),GetUser);
 
-router.put('/geter/:user', auth, authorize('admin'), auth, authorize('admin'),UpdateUser);
+router.put('/geter/:user', auth, authorize('admin'), auth, authorize('admin'),UpdateUser);//NEed to be Changed
 
 router.delete('/:id', auth, authorize('admin'),DeleteUser);
 
