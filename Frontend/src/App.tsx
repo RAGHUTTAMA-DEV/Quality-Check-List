@@ -11,9 +11,11 @@ import CheckListForm from './pages/Checklist/CheckListForm'
 import ItemsGet from './pages/items/itemsGet'
 import ItemsUpdate from './pages/items/UpdatingItems'
 import Tracker from './pages/Tracker/Tracker'
+import Demo from './pages/demo'
 function App() {
   return (
     <div>
+      
       <BrowserRouter>
         <AuthProvider>
           <Routes>
@@ -26,7 +28,7 @@ function App() {
             {/* Add more routes as needed */}
             <Route path='/users' element={<PrivateProvider roles={['admin','operator']} ><UserTable/></PrivateProvider>} />
             <Route path='/checkList' element={<CheckList/>}/>
-            <Route path='checkList/update' element={<CheckListForm/>}/>
+            <Route path='/checkList/update' element={<CheckListForm/>}/>
             <Route path='/items' element={<ItemsGet/>}/>
             <Route path='/items/update' element={<ItemsUpdate/>}/>
             <Route path='/tracker' element={<Tracker/>}/>

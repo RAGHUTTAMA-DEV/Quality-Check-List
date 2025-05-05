@@ -80,7 +80,7 @@ export default function CheckList() {
         axiosConfig
       )
       
-      // Add the new checklist to the state
+      // @ts-ignore
       setChecklists(prev => [...prev, response.data.checklist])
       
       // Reset form and hide it
@@ -100,40 +100,7 @@ export default function CheckList() {
     }
   }
   
-  async function toggleTaskStatus(id) {
-    try {
-      const checklist = checklists.find(item => item._id === id)
-      if (!checklist) return
-      
-      const updatedData = {
-        ...checklist,
-        isChecked: !checklist.isChecked
-      }
-      
-      // Send update request
-      await axios.put(
-        'http://localhost:3000/api/checklist',
-        { 
-          content: checklist.content, // Using content as identifier per backend
-          isChecked: !checklist.isChecked
-        },
-        axiosConfig
-      )
-      
-      // Update local state
-      setChecklists(prev => 
-        prev.map(item => 
-          item._id === id 
-            ? { ...item, isChecked: !item.isChecked } 
-            : item
-        )
-      )
-    } catch (err) {
-      console.error(err)
-      setError(true)
-    }
-  }
-
+  
  
 
 
@@ -142,7 +109,7 @@ export default function CheckList() {
     setFormVisible(!formVisible)
   }
 
-  function viewTaskDetails(item) {
+  function viewTaskDetails(item:any) {
     setSelectedItem(selectedItem?._id === item._id ? null : item)
   }
 
@@ -418,7 +385,7 @@ export default function CheckList() {
                         className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate('checkList/update');
+                          navigate('/checklist/update');
                         }}
                       >
                         <Edit size={16} />
@@ -427,9 +394,9 @@ export default function CheckList() {
                         variant="ghost"
                         size="sm"
                         className="p-2 text-red-600 hover:bg-red-100 rounded-full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate('checkList/update');
+                        onClick={() => {
+                          
+                          navigate('/checkList/update');
                         }}
                       >
                         <Trash2 size={16} />
