@@ -21,6 +21,7 @@ export default function CheckList() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedItem, setSelectedItem] = useState(null)
   const [animation, setAnimation] = useState(false)
+  const [Assigned, setAssigned] = useState('')
   const navigate = useNavigate()
  
   const triggerAnimation = () => {
@@ -70,7 +71,8 @@ export default function CheckList() {
         comments,
         checkedBy: checkBy, // Make sure this matches the backend field name
         isChecked,
-        Image: image // Fixed to match backend field name (capital I)
+        Image: image,
+        AssingedTo:Assigned // Fixed to match backend field name (capital I)
       }
       
       // Post request to create checklist
@@ -90,6 +92,7 @@ export default function CheckList() {
       setImage('')
       setIsChecked(false)
       setFormVisible(false)
+      setAssigned('')
       
       triggerAnimation()
     } catch (err) {
@@ -180,6 +183,7 @@ export default function CheckList() {
             <PlusCircle className="mr-2" size={20} />
             Create New Task
           </h2>
+          <Input onChange={(e)=>setAssigned(e.target.value)} placeholder="Assigned TO" value={Assigned}/>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">Task Content</label>
@@ -191,7 +195,7 @@ export default function CheckList() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Assigned To</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Checked By</label>
               <Input 
                 placeholder="Who's responsible?" 
                 value={checkBy}

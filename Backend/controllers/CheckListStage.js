@@ -2,7 +2,7 @@ import CheckListStage from "../models/CheckListStage.js";
 
 export async function PostCheckListItem(req, res) {
   try {
-    const { title, items, stage, description } = req.body;
+    const { title, items, stage, description,AssingedTo } = req.body;
     
     if (!title || !stage) {
       return res.status(400).json({ message: "Title and stage are required" });
@@ -12,7 +12,7 @@ export async function PostCheckListItem(req, res) {
       title, 
       items: items || [], 
       stage,
-      description: description || ""
+      description: description || "",AssingedTo
     });
     
     res.status(201).json({ message: "Checklist Item Created", created });
