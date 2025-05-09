@@ -27,11 +27,10 @@ const CheckList=new schema({
         type:String,
         default:""
     }
-
 })
 
- const CheckListModel=mongoose.model("CheckList",CheckList);
+ const CheckListItem=mongoose.model("CheckList",CheckList);
 
- export default CheckListModel;
+ export default CheckListItem;
 
  

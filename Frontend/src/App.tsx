@@ -24,7 +24,7 @@ function App() {
             <Route path='/signup' element={<Signup />} />
             <Route path='/login' element={<Login />} />
             <Route path='/' element={<DashBoard />} />
-            {/* Add your CheckList-Management route here, for example: */}
+
             {/* <Route path='/checklist' element={<ChecklistManagement />} /> */}
             {/* Add more routes as needed */}
             <Route path='/users' element={<PrivateProvider roles={['admin','operator']} ><UserTable/></PrivateProvider>} />

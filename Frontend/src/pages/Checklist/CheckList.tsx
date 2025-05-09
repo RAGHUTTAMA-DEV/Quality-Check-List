@@ -99,12 +99,6 @@ export default function CheckList() {
       setLoading(false)
     }
   }
-  
-  
- 
-
-
-
   function toggleForm() {
     setFormVisible(!formVisible)
   }
@@ -131,7 +125,7 @@ export default function CheckList() {
   }
 
   return (
-    <div className="max-w-9xl mx-auto p-6 bg-gradient-to-b from-blue-50 to-gray-50 min-h-screen">
+    <div className="max-w-9xl max-w-screen mx-auto p-6 bg-gradient-to-b from-blue-50 to-gray-50 min-h-screen">
       <div className={`bg-white shadow-xl rounded-xl p-6 transition-all duration-500 ${animation ? 'scale-102 shadow-2xl' : ''}`}>
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center">
@@ -188,7 +182,7 @@ export default function CheckList() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Task Content*</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Task Content</label>
               <Input 
                 placeholder="What needs to be done?" 
                 value={content}

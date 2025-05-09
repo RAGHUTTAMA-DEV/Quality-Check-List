@@ -1,10 +1,10 @@
-import CheckListModel from "../models/CheckList.js";
+import CheckListItem from "../models/CheckList.js";
 
 export async function CreateCheckList(req, res) {
   try {
     const { content, isChecked, comments, checkedBy, Image } = req.body;
 
-    const newChecklist = await CheckListModel.create({
+    const newChecklist = await CheckListItem.create({
       content,
       isChecked,
       comments,
@@ -21,7 +21,7 @@ export async function CreateCheckList(req, res) {
 
 export async function GetAllCheckList(req, res) {
   try {
-    const checklists = await CheckListModel.find();
+    const checklists = await CheckListItem.find();
     res.status(200).json({ checklists, message: "Checklists Found" });
     console.log(checklists);
   } catch (err) {
@@ -60,7 +60,7 @@ export async function UpdateCheckList(req, res) {
       return res.status(400).json({ message: "Content query is required" });
     }
 
-    const checklist = await CheckListModel.findOneAndUpdate(
+    const checklist = await CheckListItem.findOneAndUpdate(
       { content },
       { $set: updateData },
       { new: true }
@@ -85,7 +85,7 @@ export async function DeleteCheckList(req, res) {
       return res.status(400).json({ message: "Content query is required" });
     }
 
-    const checklist = await CheckListModel.findOneAndDelete({ content });
+    const checklist = await CheckListItem.findOneAndDelete({ content });
 
     if (!checklist) {
       return res.status(404).json({ message: "Checklist not found" });

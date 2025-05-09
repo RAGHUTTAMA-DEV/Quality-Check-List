@@ -19,7 +19,8 @@ const CheckListStage=new schema({
     items:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"CheckList"
-    }]
+    }],
+    
 
 })
 

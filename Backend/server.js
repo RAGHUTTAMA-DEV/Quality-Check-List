@@ -27,7 +27,7 @@ const PORT=process.env.PORT || 5000;
 async function main(){
     await ConnectDb();
     app.listen(PORT,()=>{
-        console.log("Server Started");
+        console.log("Server Started on port 5000");
     })
 }
 

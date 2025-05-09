@@ -186,7 +186,7 @@ export default function UserTable() {
                     <UsersRound className="mr-2 text-blue-500" />
                     <h2 className="text-xl font-semibold">All Users</h2>
                     <motion.div 
-                        className="ml-auto"
+                        className="ml-auto origin-center"
                         animate={{ rotate: activeSection === 'allUsers' ? 180 : 0 }}
                         transition={{ duration: 0.3 }}
                     >

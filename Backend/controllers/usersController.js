@@ -5,7 +5,6 @@ async function GetAllUsers(req,res){
         const users=await UserModel.find();
         res.status(200).json({users,message:"All Users"});
 
-
     }catch(err){
         console.log(err);
         res.status(500).json({message:"Something went wrong"})
