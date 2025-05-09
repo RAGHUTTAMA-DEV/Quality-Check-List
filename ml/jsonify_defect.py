@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # ✅ Import CORS
 import pandas as pd
 import joblib
 from http import HTTPStatus
 
 app = Flask(__name__)
+CORS(app)  # ✅ Enable CORS for all routes
 
 # Load model and encoders
 model = joblib.load('./ml/defect_regressor.pkl')
@@ -19,7 +21,6 @@ def health_check():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Get JSON input data
         input_data = request.get_json()
         
         if not input_data:
@@ -33,16 +34,14 @@ def predict():
             'Humidity', 'Previous_Day_Defects'
         ]
 
-        # Validate required fields
         missing_fields = [field for field in required_fields if field not in input_data]
         if missing_fields:
             return jsonify({
                 "error": f"Missing required fields: {', '.join(missing_fields)}"
             }), HTTPStatus.BAD_REQUEST
 
-        # Convert numeric fields
         numeric_fields = ['Production_Volume', 'Machine_Usage_Hours', 'Temperature', 
-                         'Humidity', 'Previous_Day_Defects']
+                          'Humidity', 'Previous_Day_Defects']
         
         try:
             for field in numeric_fields:
@@ -54,7 +53,6 @@ def predict():
 
         df = pd.DataFrame([input_data])
 
-        # Encode categorical features
         try:
             for col, le in label_encoders.items():
                 df[col] = le.transform(df[col])
@@ -63,7 +61,6 @@ def predict():
                 "error": f"Invalid categorical value: {str(e)}"
             }), HTTPStatus.BAD_REQUEST
 
-        # Predict
         prediction = model.predict(df)
         predicted_defects = int(prediction[0])
 
