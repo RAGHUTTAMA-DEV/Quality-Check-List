@@ -27,7 +27,6 @@ const CheckList=new schema({
         type:String,
         default:""
     }
-
 })
 
  const CheckListModel=mongoose.model("CheckList",CheckList);
