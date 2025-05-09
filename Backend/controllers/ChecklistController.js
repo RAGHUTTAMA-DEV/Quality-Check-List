@@ -10,7 +10,7 @@ export async function CreateCheckList(req, res) {
       comments,
       checkedBy,
       Image,
-      
+      AssingedTo
     });
 
     res.status(201).json({ checklist: newChecklist, message: "Checklist Created" });

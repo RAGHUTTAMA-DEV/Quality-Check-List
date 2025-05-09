@@ -6,6 +6,7 @@ import {
   DeleteCheckListItem,
   MarkCheckListItem
 } from '../controllers/CheckListStage.js';
+import { auth,authorize } from '../middleware/authorize.js';
 
 const router = express.Router();
 

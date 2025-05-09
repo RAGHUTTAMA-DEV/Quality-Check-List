@@ -21,7 +21,9 @@ export default function CheckList() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedItem, setSelectedItem] = useState(null)
   const [animation, setAnimation] = useState(false)
-  const [Assigned, setAssigned] = useState('')
+  const [assigned, setAssigned] = useState('')
+  const [editMode, setEditMode] = useState(false)
+  const [currentId, setCurrentId] = useState(null)
   const navigate = useNavigate()
  
   const triggerAnimation = () => {
@@ -43,10 +45,7 @@ export default function CheckList() {
   async function GetAllChecklists() {
     setLoading(true)
     try {
-      // Fixed API call to match backend route
       const response = await axios.get('http://localhost:3000/api/checklist', axiosConfig)
-      
-      // Based on your controller, data is returned as { checklists, message }
       setChecklists(response.data.checklists || [])
       triggerAnimation()
     } catch (err) {
@@ -69,10 +68,10 @@ export default function CheckList() {
       const checklistData = {
         content,
         comments,
-        checkedBy: checkBy, // Make sure this matches the backend field name
+        checkedBy: checkBy,
         isChecked,
         Image: image,
-        AssingedTo:Assigned // Fixed to match backend field name (capital I)
+        AssingedTo: assigned // Match backend field name
       }
       
       // Post request to create checklist
@@ -82,31 +81,160 @@ export default function CheckList() {
         axiosConfig
       )
       
-      // @ts-ignore
       setChecklists(prev => [...prev, response.data.checklist])
       
       // Reset form and hide it
-      setContent('')
-      setComments('')
-      setCheckBy('')
-      setImage('')
-      setIsChecked(false)
-      setFormVisible(false)
-      setAssigned('')
+      resetForm()
       
       triggerAnimation()
     } catch (err) {
-      console.log(err)
+      console.error(err)
       setError(true)
     } finally {
       setLoading(false)
     }
   }
+
+  async function UpdateCheckList() {
+    if (!content.trim() || !currentId) {
+      alert("Content is required!")
+      return
+    }
+    
+    setLoading(true)
+    try {
+      // Create payload
+      const checklistData = {
+        content,
+        comments,
+        checkedBy: checkBy,
+        isChecked,
+        Image: image,
+        AssingedTo: assigned
+      }
+      
+      // Put request to update checklist
+      const response = await axios.put(
+        `http://localhost:3000/api/checklist?content=${encodeURIComponent(content)}`,
+        checklistData,
+        axiosConfig
+      )
+      
+      // Update the list with the updated item
+      setChecklists(prev => 
+        prev.map(item => item._id === currentId ? response.data.checklist : item)
+      )
+      
+      // Reset form and hide it
+      resetForm()
+      setEditMode(false)
+      setCurrentId(null)
+      
+      triggerAnimation()
+    } catch (err) {
+      console.error(err)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function DeleteCheckList(content) {
+    if (!content) return
+    
+    setLoading(true)
+    try {
+      await axios.delete(
+        `http://localhost:3000/api/checklist?content=${encodeURIComponent(content)}`,
+        axiosConfig
+      )
+      
+      // Remove the deleted item from the list
+      setChecklists(prev => prev.filter(item => item.content !== content))
+      
+      // If the deleted item was selected, clear selection
+      if (selectedItem?.content === content) {
+        setSelectedItem(null)
+      }
+      
+      triggerAnimation()
+    } catch (err) {
+      console.error(err)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function toggleTaskStatus(id) {
+    if (!id) return
+    
+    try {
+      // Find the task
+      const task = checklists.find(item => item._id === id)
+      if (!task) return
+      
+      // Prepare data for update
+      const updateData = {
+        ...task,
+        isChecked: !task.isChecked
+      }
+      
+      // Send update request
+      const response = await axios.put(
+        `http://localhost:3000/api/checklist?content=${encodeURIComponent(task.content)}`,
+        updateData,
+        axiosConfig
+      )
+      
+      // Update local state
+      setChecklists(prev => 
+        prev.map(item => item._id === id ? response.data.checklist : item)
+      )
+      
+      // Update selected item if needed
+      if (selectedItem?._id === id) {
+        setSelectedItem(response.data.checklist)
+      }
+    } catch (err) {
+      console.error(err)
+      setError(true)
+    }
+  }
+
+  function resetForm() {
+    setContent('')
+    setComments('')
+    setCheckBy('')
+    setImage('')
+    setIsChecked(false)
+    setFormVisible(false)
+    setAssigned('')
+  }
+
   function toggleForm() {
+    if (formVisible && editMode) {
+      setEditMode(false)
+      setCurrentId(null)
+      resetForm()
+    }
     setFormVisible(!formVisible)
   }
 
-  function viewTaskDetails(item:any) {
+  function startEditTask(item) {
+    setContent(item.content)
+    setComments(item.comments || '')
+    setCheckBy(item.checkedBy || '')
+    setImage(item.Image || '')
+    setIsChecked(item.isChecked || false)
+    setAssigned(item.AssingedTo || '')
+    setCurrentId(item._id)
+    setEditMode(true)
+    setFormVisible(true)
+    setSelectedItem(null)
+  }
+
+  function viewTaskDetails(item) {
     setSelectedItem(selectedItem?._id === item._id ? null : item)
   }
 
@@ -173,17 +301,27 @@ export default function CheckList() {
           />
         </div>
         
-        {/* Create form */}
+        {/* Create/Edit form */}
         <div
-          className={`bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 mb-8 border border-blue-100 transition-all duration-500 ease-in-out overflow-hidden ${
-            formVisible ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 p-0 border-0 mb-0'
+          className={`bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 mb-8 border border-blue-100 transition-all duration-500 ease-in-out ${
+            formVisible ? 'block opacity-100' : 'hidden opacity-0 p-0 border-0 mb-0'
           }`}
         >
           <h2 className="text-xl font-semibold mb-4 text-blue-700 flex items-center">
-            <PlusCircle className="mr-2" size={20} />
-            Create New Task
+            {editMode ? <Edit className="mr-2" size={20} /> : <PlusCircle className="mr-2" size={20} />}
+            {editMode ? "Edit Task" : "Create New Task"}
           </h2>
-          <Input onChange={(e)=>setAssigned(e.target.value)} placeholder="Assigned TO" value={Assigned}/>
+          
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-700">Assigned To</label>
+            <Input 
+              placeholder="Who is this task assigned to?" 
+              value={assigned}
+              onChange={(e) => setAssigned(e.target.value)}
+              className="bg-white focus:ring focus:ring-blue-200 transition-all duration-300"
+            />
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700">Task Content</label>
@@ -231,10 +369,10 @@ export default function CheckList() {
             />
             <label htmlFor="status" className="text-sm font-medium text-gray-700">Mark as completed</label>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end mt-4">
             <Button 
-              onClick={CreateCheckList}
-              className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+              onClick={editMode ? UpdateCheckList : CreateCheckList}
+              className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg px-6 py-2 text-white font-medium"
               disabled={loading}
             >
               {loading ? 
@@ -243,8 +381,8 @@ export default function CheckList() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Creating...
-                </span> : "Create Task"
+                  {editMode ? "Updating..." : "Creating..."}
+                </span> : editMode ? "Update Task" : "Create Task"
               }
             </Button>
           </div>
@@ -383,7 +521,7 @@ export default function CheckList() {
                         className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate('/checklist/update');
+                          startEditTask(item);
                         }}
                       >
                         <Edit size={16} />
@@ -392,9 +530,9 @@ export default function CheckList() {
                         variant="ghost"
                         size="sm"
                         className="p-2 text-red-600 hover:bg-red-100 rounded-full"
-                        onClick={() => {
-                          
-                          navigate('/checkList/update');
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          DeleteCheckList(item.content);
                         }}
                       >
                         <Trash2 size={16} />
@@ -425,7 +563,7 @@ export default function CheckList() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 mr-2">
                               <User size={16} />
                             </div>
-                            <span>{item.checkedBy || "Unassigned"}</span>
+                            <span>{item.AssingedTo || item.checkedBy || "Unassigned"}</span>
                           </div>
                           
                           <h4 className="text-sm font-medium text-gray-500 mt-4 mb-1">Created On</h4>
@@ -455,4 +593,4 @@ export default function CheckList() {
       </div>
     </div>
   )
-} 
+}

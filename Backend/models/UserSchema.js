@@ -24,7 +24,8 @@ const userSchema=new schema({
     createAt:{
         type:Date,
         default:Date.now()
-    }
+    },
+    
 })
 
 const UserModel=mongoose.model("User",userSchema); 

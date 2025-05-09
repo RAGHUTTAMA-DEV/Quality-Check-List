@@ -63,7 +63,7 @@ export default function CheckListForm() {
         <Input 
           placeholder="Enter Content Title of Checklist" 
           onChange={(e) => setContent(e.target.value)}
-          value={content}
+          value={content} 
         />
         <Input 
           placeholder="Enter Updated CheckedBy" 
