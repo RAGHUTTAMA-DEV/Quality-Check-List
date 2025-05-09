@@ -28,7 +28,7 @@ const ProdunctStage=new schema({
   },
   status:{
      type:String,
-     enum:["pending","inProgress","completed"],
+     enum:["pending","inProgress","completed","Failed"],
      default:"pending"
   },
   assignedTo:{

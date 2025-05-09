@@ -29,8 +29,8 @@ const CheckList=new schema({
     }
 })
 
- const CheckListModel=mongoose.model("CheckList",CheckList);
+ const CheckListItem=mongoose.model("CheckList",CheckList);
 
- export default CheckListModel;
+ export default CheckListItem;
 
  

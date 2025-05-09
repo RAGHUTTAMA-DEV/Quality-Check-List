@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/UserSchema.js';
 
-// Reusable Role-Based Middleware
 export function authorize(...allowedRoles) {
   return async (req, res, next) => {
     try {
