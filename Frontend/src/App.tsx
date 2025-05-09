@@ -12,7 +12,6 @@ import ItemsGet from './pages/items/itemsGet'
 import ItemsUpdate from './pages/items/UpdatingItems'
 import Tracker from './pages/Tracker/Tracker'
 import Demo from './pages/demo'
-import ML from './pages/ml'
 function App() {
   return (
     <div>
@@ -33,7 +32,6 @@ function App() {
             <Route path='/items' element={<ItemsGet/>}/>
             <Route path='/items/update' element={<ItemsUpdate/>}/>
             <Route path='/tracker' element={<Tracker/>}/>
-            <Route path='/ml' element={<ML/>}/>
           </Routes>
         </AuthProvider>
       </BrowserRouter>

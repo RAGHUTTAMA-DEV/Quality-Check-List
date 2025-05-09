@@ -20,6 +20,10 @@ const CheckListStage=new schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"CheckList"
     }],
+    AssignedTo:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }
     
 
 })

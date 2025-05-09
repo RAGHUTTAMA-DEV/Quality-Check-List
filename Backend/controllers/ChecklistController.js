@@ -2,7 +2,7 @@ import CheckListItem from "../models/CheckList.js";
 
 export async function CreateCheckList(req, res) {
   try {
-    const { content, isChecked, comments, checkedBy, Image } = req.body;
+    const { content, isChecked, comments, checkedBy, Image,AssingedTo } = req.body;
 
     const newChecklist = await CheckListItem.create({
       content,
@@ -10,6 +10,7 @@ export async function CreateCheckList(req, res) {
       comments,
       checkedBy,
       Image,
+      
     });
 
     res.status(201).json({ checklist: newChecklist, message: "Checklist Created" });
@@ -97,3 +98,5 @@ export async function DeleteCheckList(req, res) {
     res.status(500).json({ message: "Error deleting checklist" });
   }
 }
+
+
