@@ -396,19 +396,19 @@ export default function DefectForm() {
               <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
                 <h4 className="font-medium text-blue-800 mb-2">Production Insights</h4>
                 <ul className="space-y-2 text-sm">
-                  {parseFloat(formData.Temperature) > 30 && (
+                  {parseFloat(formData.Temperature) >= 30 && (
                     <li className="flex items-start">
                       <AlertTriangle size={16} className="mr-2 text-yellow-500 mt-0.5" />
                       <span>High temperature may contribute to increased defects.</span>
                     </li>
                   )}
-                  {parseFloat(formData.Humidity) > 70 && (
+                  {parseFloat(formData.Humidity) >= 60 && (
                     <li className="flex items-start">
                       <AlertTriangle size={16} className="mr-2 text-yellow-500 mt-0.5" />
                       <span>High humidity levels detected, consider environmental controls.</span>
                     </li>
                   )}
-                  {parseFloat(formData.Machine_Usage_Hours) > 12 && (
+                  {parseFloat(formData.Machine_Usage_Hours) > 15 && (
                     <li className="flex items-start">
                       <AlertTriangle size={16} className="mr-2 text-yellow-500 mt-0.5" />
                       <span>Extended machine usage may require maintenance check.</span>
