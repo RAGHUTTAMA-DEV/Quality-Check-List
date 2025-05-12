@@ -12,6 +12,7 @@ export default function Login() {
   const { login } = useAuth(); // Properly use the useAuth hook inside the component
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [role,setrole]=useState("");
   const [formdata, setFormData] = useState({
     email: "",
     password: ""
@@ -41,13 +42,23 @@ export default function Login() {
         console.log(response);
         const token = data.token;
         const user = data.user;
-        
+        const role=data.user.role;
+        console.log(role)
+        setrole(role);
         
         // Call the login function from the auth context
         login(token, user);
         
         toast.success("Login Successful");
-        setTimeout(() => navigate('/users'), 1000);
+
+        if(role==="admin"){
+          navigate('/admin');
+        }else if(role==="operator"){
+          navigate('/userC')
+        }else{
+          navigate('/users')
+        }
+        
       } else {
         toast.error("Login Failed. Please check your credentials.");
       }
@@ -68,6 +79,7 @@ export default function Login() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md space-y-8"
       >
+        
         <div className="text-center">
           <motion.h1 
             initial={{ scale: 0.9 }}

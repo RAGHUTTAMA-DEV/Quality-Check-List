@@ -1,319 +1,392 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/AuthContext";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { 
-  CheckCircle, RefreshCw, Eye, CheckSquare, 
-  Search, Calendar, Layers, ClipboardList, AlertCircle
+import {
+  ClipboardList,
+  RefreshCw,
+  ImageDown,
+  CheckSquare,
+  CheckCircle,
+  MessageSquare,
+  Layers,
+  FileText,
+  Clock,
+  BarChart2,
+  User,
+  Menu,
+  X,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-interface Stage {
-  _id: string;
-  stage: {
-    name: string;
-  };
-  status: string;
-  createdAt: string;
-  description?: string;
-  // Add any other fields you expect
-}
-
-export default function UserDash(): JSX.Element {
-  const { token, user } = useAuth();
-  const [stages, setStages] = useState<Stage[]>([]);
+export default function UserDash() {
+  const { user, token } = useAuth();
+  const [stages, setStages] = useState([]);
+  const [assignedItems, setAssignedItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStage, setSelectedStage] = useState<Stage | null>(null);
+  const [error, setError] = useState("");
   const [animation, setAnimation] = useState(false);
+  const [refreshed, setRefreshed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const navItems = [
+    { name: "Dashboard", href: "/", icon: <ClipboardList size={16} /> },
+    { name: "Items", href: "/items", icon: <FileText size={16} /> },
+    { name: "Users", href: "/users", icon: <User size={16} /> },
+    { name: "Checklist", href: "/checklist", icon: <CheckSquare size={16} /> },
+  ];
+
+  useEffect(() => {
+    if (user && token) {
+      getStages();
+    }
+  }, [user, token]);
+
+  async function getStages() {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/items/user-assignments?userId=${user._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setStages(response.data.assignedStages || []);
+      setAssignedItems(response.data.assignedItems || []);
+    } catch (err) {
+      console.error("Error fetching assignments:", err);
+      setError("Failed to load assignments. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const triggerAnimation = () => {
     setAnimation(true);
     setTimeout(() => setAnimation(false), 1000);
   };
 
-  useEffect(() => {
-    if (!user || !token) return;
-    fetchAssignedStages();
-  }, [user, token]);
-
-  // Configure axios headers with token
-  const axiosConfig = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+  const handleRefresh = async () => {
+    await getStages();
+    triggerAnimation();
+    setRefreshed(true);
+    setTimeout(() => setRefreshed(false), 3000);
   };
 
-  async function fetchAssignedStages() {
-    if (!user || !token) return;
-    
-    setLoading(true);
-    try {
-      const res = await axios.get(
-        `http://localhost:3000/api/checklist/assigned?userId=${user._id}`,
-        axiosConfig
-      );
-      
-      setStages(res.data.stages || []);
-      setError(false);
-      triggerAnimation();
-    } catch (error) {
-      console.error("Error fetching assigned stages:", error);
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }
-  
-  function viewStageDetails(stage: Stage) {
-    setSelectedStage(selectedStage?._id === stage._id ? null : stage);
-  }
-
-  const filteredStages = stages.filter(stage => 
-    stage.stage?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    stage.status?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Function to get status color
-  const getStatusColor = (status: string) => {
-    switch(status?.toLowerCase()) {
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      case 'in progress':
-        return 'bg-blue-100 text-blue-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString();
   };
 
-  // Format date 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+  const getStatusClass = (isChecked) => {
+    return isChecked ? "text-green-600" : "text-amber-600";
   };
 
-  if (loading && stages.length === 0) {
-    return (
-      <div className="max-w-6xl mx-auto p-6 bg-gradient-to-b from-blue-50 to-gray-50 min-h-screen flex items-center justify-center">
-        <div className="w-16 h-16 relative">
-          <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-          <div className="w-16 h-16 border-4 border-transparent border-l-purple-300 rounded-full animate-spin absolute top-0 left-0" style={{animationDuration: '1.5s'}}></div>
-        </div>
-      </div>
-    );
-  }
+  const getStatusText = (isChecked) => {
+    return isChecked ? "Completed" : "Pending";
+  };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gradient-to-b from-blue-50 to-gray-50 min-h-screen">
-      <div className={`bg-white shadow-xl rounded-xl p-6 transition-all duration-500 ${animation ? 'scale-102 shadow-2xl' : ''}`}>
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600 text-white mr-4">
-              <ClipboardList size={24} />
+    <div className="max-w-5xl mx-auto p-6 bg-gradient-to-b from-blue-50 to-gray-50 min-h-screen">
+      <div
+        className={`bg-white shadow-xl rounded-xl p-6 transition-all duration-500 ${
+          animation ? "scale-102 shadow-2xl" : ""
+        }`}
+      >
+        {/* Unified Navigation */}
+        <div className="mb-8">
+          {/* Mobile Header */}
+          <div className="flex md:hidden justify-between items-center mb-4">
+            <div className="flex items-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white mr-3">
+                <ClipboardList size={20} />
+              </div>
+              <h1 className="text-xl font-bold text-blue-700">Quality Check Dashboard</h1>
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Your Assigned Checklists
-            </h1>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </Button>
           </div>
-          
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden mb-4"
+            >
+              <nav className="flex flex-col space-y-1 bg-blue-50 p-4 rounded-lg">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={cn(
+                      "flex items-center py-2 px-3 rounded-md transition-colors",
+                      window.location.pathname === item.href
+                        ? "bg-blue-100 text-blue-700 font-medium"
+                        : "text-gray-700 hover:text-blue-600 hover:bg-blue-100"
+                    )}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="mr-2">{item.icon}</span>
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+
+          {/* Desktop Navigation */}
+          <motion.header
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="hidden md:block border-b border-gray-200 pb-4"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white mr-3">
+                  <ClipboardList size={20} />
+                </div>
+                <h1 className="text-xl font-bold text-blue-700">
+                  Quality Check Dashboard
+                </h1>
+              </div>
+              <nav className="flex space-x-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={cn(
+                      "flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                      window.location.pathname === item.href
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                    )}
+                  >
+                    <span className="mr-2">{item.icon}</span>
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </motion.header>
+        </div>
+
+        {/* Main Dashboard Content */}
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center">
+            <ClipboardList size={24} className="text-blue-600 mr-3" />
+            Your Assignments
+          </h2>
           <div className="flex space-x-3">
             <Button
               variant="outline"
-              className="flex items-center border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"
-              onClick={fetchAssignedStages}
+              className="flex items-center border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+              onClick={handleRefresh}
               disabled={loading}
             >
-              <RefreshCw className={`mr-2 ${loading ? 'animate-spin' : ''}`} size={18} />
+              <RefreshCw
+                className={`mr-2 ${loading ? "animate-spin" : ""}`}
+                size={18}
+              />
               Refresh
+            </Button>
+            <Button
+              variant="outline"
+              className="flex items-center border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+              onClick={() => navigate("/ml")}
+              disabled={loading}
+            >
+              <ImageDown className="mr-2" size={18} />
+              Predict Defect
+            </Button>
+            <Button
+              variant="outline"
+              className="flex items-center border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+              onClick={() => navigate("/image")}
+              disabled={loading}
+            >
+              <ImageDown className="mr-2" size={18} />
+              Image Defect Analysis
             </Button>
           </div>
         </div>
 
-        {/* Search bar */}
-        <div className="mb-6 relative group">
-          <Search className="absolute left-3 top-3 text-gray-400 group-hover:text-indigo-500 transition-colors duration-300" size={18} />
-          <Input 
-            placeholder="Search checklists..." 
-            className="pl-10 bg-gray-50 border-gray-200 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-all duration-300 rounded-lg"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        
-        {/* Error state */}
+        {/* Error and Success Notifications */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 animate-pulse">
-            <div className="flex items-center">
-              <AlertCircle className="mr-2" size={18} />
-              <p>Error loading assigned checklists. Please try again.</p>
+            <div className="flex">
+              <CheckCircle className="mr-2" />
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
+        {refreshed && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 animate-pulse">
+            <div className="flex">
+              <CheckCircle className="mr-2" />
+              <p>Assignments refreshed successfully!</p>
             </div>
           </div>
         )}
 
-        {/* Loading state for refresh */}
-        {loading && stages.length > 0 && (
-          <div className="flex justify-center py-6">
-            <div className="w-12 h-12 relative">
-              <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            </div>
-          </div>
-        )}
-
-        {/* Stats Row */}
-        {!loading && stages.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-lg border border-indigo-100 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-indigo-600 text-sm font-medium">Total Checklists</p>
-                <p className="text-2xl font-bold text-indigo-700">{stages.length}</p>
-              </div>
-              <div className="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
-                <ClipboardList size={24} />
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-50 to-teal-50 p-4 rounded-lg border border-green-100 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-green-600 text-sm font-medium">Completed</p>
-                <p className="text-2xl font-bold text-green-700">
-                  {stages.filter(stage => stage.status?.toLowerCase() === 'completed').length}
-                </p>
-              </div>
-              <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                <CheckCircle size={24} />
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-blue-600 text-sm font-medium">In Progress</p>
-                <p className="text-2xl font-bold text-blue-700">
-                  {stages.filter(stage => stage.status?.toLowerCase() === 'in progress').length}
-                </p>
-              </div>
-              <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                <Layers size={24} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Stages list */}
-        <div className="space-y-3">
-          {filteredStages.length === 0 ? (
-            <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-              <div className="flex flex-col items-center">
-                <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4">
-                  <ClipboardList size={32} />
-                </div>
-                <p className="text-lg font-medium">
-                  {searchTerm ? "No matching checklists found" : "No checklists assigned to you yet"}
-                </p>
-              </div>
+        {/* Assigned Stages */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 mb-8 border border-blue-100">
+          <h2 className="text-xl font-semibold mb-4 text-blue-700 flex items-center">
+            <Layers className="mr-2" size={20} />
+            Assigned Stages
+          </h2>
+          {stages.length === 0 ? (
+            <div className="bg-white p-6 rounded-lg border border-blue-200 text-center text-gray-500">
+              No stages assigned to you.
             </div>
           ) : (
-            filteredStages.map((stage) => (
-              <div key={stage._id}>
-                <div 
-                  className={`flex items-center justify-between p-4 rounded-lg shadow-sm border-l-4 transition-all duration-300 cursor-pointer hover:shadow-md border-indigo-500 bg-white hover:bg-indigo-50 ${
-                    selectedStage?._id === stage._id ? 'ring-2 ring-indigo-300' : ''
-                  }`}
-                  onClick={() => viewStageDetails(stage)}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {stages.map((stage) => (
+                <div
+                  key={stage._id}
+                  className="bg-white p-4 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all duration-300"
                 >
-                  <div className="flex items-start space-x-3 flex-1">
-                    <div className="mt-1">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
-                        <CheckSquare size={16} />
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center mb-2">
+                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-2">
+                        <FileText className="text-blue-600" size={16} />
                       </div>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-800">
-                        {stage.stage?.name ?? "Unnamed"}
+                      <h3 className="font-semibold text-blue-800">
+                        {stage.title}
                       </h3>
-                      <div className="flex items-center mt-2 space-x-2">
-                        <span className={`inline-flex items-center text-xs px-2 py-1 rounded ${getStatusColor(stage.status)}`}>
-                          {stage.status || "Unknown Status"}
-                        </span>
-                        <span className="inline-flex items-center bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                          <Calendar size={12} className="mr-1" />
-                          {formatDate(stage.createdAt)}
-                        </span>
-                      </div>
+                    </div>
+                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      {stage.stage?.name ?? "N/A"}
+                    </span>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Clock size={14} className="mr-2 text-gray-400" />
+                      <span>Created: {formatDate(stage.createdAt)}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <BarChart2 size={14} className="mr-2 text-gray-400" />
+                      <span>Items: {stage.items?.length ?? 0}</span>
                     </div>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="mt-4 pt-3 border-t border-gray-100">
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-2 text-indigo-600 hover:bg-indigo-100 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // Additional view action if needed
-                      }}
+                      variant="outline"
+                      className="w-full text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
                     >
-                      <Eye size={16} />
+                      View Details
                     </Button>
                   </div>
                 </div>
-                
-                {/* Expanded stage details */}
-                {selectedStage?._id === stage._id && (
-                  <div className="bg-white p-4 rounded-b-lg shadow-sm border border-t-0 border-indigo-100 mt-1 mb-2 transition-all duration-300">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-500 mb-1">Stage Details</h4>
-                        <p className="text-gray-800">{stage.description || "No description provided"}</p>
-                        
-                        <h4 className="text-sm font-medium text-gray-500 mt-4 mb-1">Status</h4>
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getStatusColor(stage.status)}`}>
-                          {stage.status || "No status assigned"}
-                        </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Assigned Checklist Items */}
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-5 border border-green-100">
+          <h2 className="text-xl font-semibold mb-4 text-green-700 flex items-center">
+            <CheckSquare className="mr-2" size={20} />
+            Assigned Checklist Items
+          </h2>
+          {assignedItems.length === 0 ? (
+            <div className="bg-white p-6 rounded-lg border border-green-200 text-center text-gray-500">
+              No checklist items assigned to you.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {assignedItems.map((item) => (
+                <div
+                  key={item._id}
+                  className="bg-white p-4 rounded-lg border border-green-200 shadow-sm"
+                >
+                  <div className="flex justify-between">
+                    <div className="flex-1">
+                      <div className="font-medium mb-2">{item.content}</div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <div className="text-sm text-gray-500 mb-1">
+                            Status
+                          </div>
+                          <div
+                            className={`text-lg font-bold ${getStatusClass(
+                              item.isChecked
+                            )}`}
+                          >
+                            {getStatusText(item.isChecked)}
+                          </div>
+                        </div>
+                        {item.comments && (
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <div className="text-sm text-gray-500 mb-1 flex items-center">
+                              <MessageSquare size={14} className="mr-1" />
+                              Comments
+                            </div>
+                            <div className="text-gray-700 text-sm">
+                              {item.comments}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-500 mb-1">Created</h4>
-                        <p className="text-gray-800">{new Date(stage.createdAt).toLocaleString()}</p>
-                        
-                        <h4 className="text-sm font-medium text-gray-500 mt-4 mb-1">ID</h4>
-                        <p className="text-gray-600 text-sm font-mono">{stage._id}</p>
-                      </div>
-                    </div>
-                    <div className="flex justify-end mt-4 space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-indigo-600 border-indigo-200"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Navigate to detail view or other action
-                        }}
-                      >
-                        <Eye className="mr-2" size={14} />
-                        View Checklist
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-gray-700"
-                        onClick={() => setSelectedStage(null)}
-                      >
-                        Close Details
-                      </Button>
+                      {item.Image && (
+                        <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                          <div className="text-sm text-blue-600 mb-1 flex items-center">
+                            <ImageDown size={14} className="mr-1" />
+                            Attached Image
+                          </div>
+                          <div className="text-blue-800 text-sm font-medium">
+                            {item.Image}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
-              </div>
-            ))
-           
+                  <div className="mt-4 flex justify-end">
+                    <Button className="bg-green-600 hover:bg-green-700 text-sm text-white hover:shadow-md transition-all duration-300">
+                      <CheckCircle className="mr-1" size={14} />
+                      {item.isChecked ? "View Details" : "Mark Complete"}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
+
+      {/* User Profile Badge */}
+      {user && (
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="fixed bottom-4 right-4 bg-white rounded-full shadow-lg p-2 flex items-center"
+        >
+          <div className="bg-blue-100 text-blue-700 h-8 w-8 rounded-full flex items-center justify-center mr-2">
+            <User size={16} />
+          </div>
+          <div className="pr-3">
+            <div className="text-sm font-medium">
+              {user.name || user.username || "User"}
+            </div>
+            <div className="text-xs text-gray-500">{user.role || "Operator"}</div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

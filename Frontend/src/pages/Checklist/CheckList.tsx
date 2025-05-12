@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react"
-import { PlusCircle, Trash2, RefreshCw, Edit, CheckCircle, X, Search, User, Calendar, MessageSquare } from "lucide-react"
+import { PlusCircle, Trash2, RefreshCw, Edit, CheckCircle, X, Search, User, Calendar, MessageSquare, Menu, ClipboardList, FileText } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "@/hooks/AuthContext"
+import {motion} from "framer-motion"
+import { cn } from "@/lib/utils"
 
 export default function CheckList() {
   const [error, setError] = useState(false)
@@ -24,7 +26,16 @@ export default function CheckList() {
   const [assigned, setAssigned] = useState('')
   const [editMode, setEditMode] = useState(false)
   const [currentId, setCurrentId] = useState(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
+  
+  // Navigation items - matches the common structure across the app
+  const navItems = [
+    { name: "Dashboard", href: "/", icon: <ClipboardList size={16} /> },
+    { name: "Items", href: "/items", icon: <FileText size={16} /> },
+    { name: "Users", href: "/users", icon: <User size={16} /> },
+    { name: "Checklist", href: "/checklist", icon: <CheckCircle size={16} /> },
+  ]
  
   const triggerAnimation = () => {
     setAnimation(true)
@@ -258,6 +269,83 @@ export default function CheckList() {
   return (
     <div className="max-w-9xl max-w-screen mx-auto p-6 bg-gradient-to-b from-blue-50 to-gray-50 min-h-screen">
       <div className={`bg-white shadow-xl rounded-xl p-6 transition-all duration-500 ${animation ? 'scale-102 shadow-2xl' : ''}`}>
+        {/* NEW NAVBAR - Mobile First Design */}
+        <div className="mb-8">
+          {/* Mobile Navigation Header */}
+          <div className="flex md:hidden justify-between items-center mb-4">
+            <div className="flex items-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white mr-3">
+                <CheckCircle size={20} />
+              </div>
+              <h2 className="text-xl font-bold text-blue-700">Smart Checklist</h2>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </Button>
+          </div>
+
+          {/* Mobile Navigation Menu */}
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden mb-4"
+            >
+              <div className="flex flex-col space-y-3 bg-blue-50 p-4 rounded-lg">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className="flex items-center text-gray-700 hover:text-blue-600 py-2 px-3 rounded-md hover:bg-blue-100 transition-colors"
+                  >
+                    <span className="mr-2">{item.icon}</span>
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Desktop Navigation */}
+          <motion.nav
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="hidden md:flex items-center justify-between border-b border-gray-200 pb-4"
+          >
+            <div className="flex items-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white mr-3">
+                <CheckCircle size={20} />
+              </div>
+              <h2 className="text-xl font-bold text-blue-700">Smart Checklist System</h2>
+            </div>
+            <div className="flex space-x-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    window.location.pathname === item.href
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                  )}
+                >
+                  <span className="mr-2">{item.icon}</span>
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </motion.nav>
+        </div>
+
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600 text-white mr-4">
@@ -387,13 +475,6 @@ export default function CheckList() {
             </Button>
           </div>
         </div>
-
-        {/* Error state */}
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 animate-pulse">
-            <p>Error loading your tasks. Please try again.</p>
-          </div>
-        )}
 
         {/* Loading state */}
         {loading && !formVisible && (

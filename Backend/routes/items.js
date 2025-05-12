@@ -1,4 +1,6 @@
 import express from 'express';
+import CheckListStage from '../models/CheckListStage.js';
+import CheckListItem from '../models/CheckList.js';
 import {
   PostCheckListItem,
   UpdateCheckListItem,
@@ -26,23 +28,48 @@ router.post('/mark/:title', MarkCheckListItem);
 router.get('/assigned', auth, authorize('operator', 'admin'), async (req, res) => {
   try {
     const { userId } = req.query;
-
+    
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
-
-    const assignedStages = await CheckListStage.find({ AssignedTo: userId }) // 🔧 FIXED typo here
-    if (!assignedStages) {
-      return res.status(404).json({ message: "No stages found for the user" });
-    }
-
     
-
-    res.status(200).json({ stages: assignedStages, message: "Assigned stages fetched" });
+    const assignedStages = await CheckListStage.find({ AssingedTo: userId })
+      .populate('stage')
+      .populate('items');
+    
+    res.status(200).json({ assignedStages, message: "Assigned stages fetched" });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Error fetching assigned checklists" });
   }
 });
+
+router.get('/user-assignments', auth, authorize('operator', 'admin'), async (req, res) => {
+  try {
+    const { userId } = req.query;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    
+    // Get all assigned checklist stages
+    const assignedStages = await CheckListStage.find({ AssingedTo: userId })
+      .populate('stage')
+      .populate('items');
+    
+    // Get all assigned checklist items
+    const assignedItems = await CheckListItem.find({ AssingedTo: userId });
+    
+    res.status(200).json({ 
+      assignedStages, 
+      assignedItems,
+      message: "All user assignments fetched" 
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error fetching user assignments" });
+  }
+});
+
 
 export default router;

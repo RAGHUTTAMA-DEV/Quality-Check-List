@@ -48,7 +48,8 @@ export default function SignUp() {
       const response = await axios.post('http://localhost:3000/api/auth/signup', {
         username: formData.name,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        role:formData.role
         // Note: role is not being sent from the frontend but is expected in the backend
         // You might want to add a default role or add role selection to your form
       });

@@ -13,11 +13,19 @@ import {
   Clock,
   Package,
   User,
-  Factory
+  Factory,
+  Menu,
+  X,
+  ClipboardList,
+  CheckSquare
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
+import axios from 'axios' 
+import { motion } from 'framer-motion'
+import { Link } from "react-router-dom"
+import { cn } from "@/lib/utils"
 
 export default function DefectForm() {
   const [formData, setFormData] = useState({
@@ -37,6 +45,15 @@ export default function DefectForm() {
   const [loading, setLoading] = useState(false)
   const [animation, setAnimation] = useState(false)
   const [formSuccess, setFormSuccess] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Navigation items consistent with main dashboard
+  const navItems = [
+    { name: "Dashboard", href: "/", icon: <ClipboardList size={16} /> },
+    { name: "Items", href: "/items", icon: <FileText size={16} /> },
+    { name: "Users", href: "/users", icon: <User size={16} /> },
+    { name: "Checklist", href: "/checklist", icon: <CheckSquare size={16} /> },
+  ]
 
   // Helper icons for each field
   const fieldIcons = {
@@ -65,37 +82,35 @@ export default function DefectForm() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setPrediction(null)
-    setError(null)
-    setLoading(true)
-    
+    e.preventDefault();
+    setLoading(true);
+
     try {
       const response = await fetch('http://localhost:5000/predict', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
-      })
-      
-      const data = await response.json()
-      
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
       if (response.ok) {
-        setPrediction(data.predicted_defects)
-        setFormSuccess(true)
-        setTimeout(() => setFormSuccess(false), 3000)
-        triggerAnimation()
+        setPrediction(data.predicted_defects);
+        setFormSuccess(true);
+        setTimeout(() => setFormSuccess(false), 3000);
+        triggerAnimation();
       } else {
-        setError(data.error || 'Something went wrong.')
+        setError(data.error || 'Something went wrong.');
       }
     } catch (err) {
-      console.error(err)
-      setError('Server not reachable or internal error.')
+      console.error(err);
+      setError('Server not reachable or internal error.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const resetForm = () => {
     setFormData({
@@ -136,17 +151,101 @@ export default function DefectForm() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-b from-blue-50 to-gray-50 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 bg-gradient-to-b from-blue-50 to-gray-50 min-h-screen">
       <div className={`bg-white shadow-xl rounded-xl p-6 transition-all duration-500 ${animation ? 'scale-102 shadow-2xl' : ''}`}>
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600 text-white mr-4">
-              <PieChart size={24} />
+        {/* Unified Navigation */}
+        <div className="mb-8">
+          {/* Mobile Header */}
+          <div className="flex md:hidden justify-between items-center mb-4">
+            <div className="flex items-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white mr-3">
+                <PieChart size={20} />
+              </div>
+              <h1 className="text-xl font-bold text-blue-700">Quality Check Dashboard</h1>
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Defect Prediction
-            </h1>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </Button>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden mb-4"
+            >
+              <nav className="flex flex-col space-y-1 bg-blue-50 p-4 rounded-lg">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={cn(
+                      "flex items-center py-2 px-3 rounded-md transition-colors",
+                      window.location.pathname === item.href
+                        ? "bg-blue-100 text-blue-700 font-medium"
+                        : "text-gray-700 hover:text-blue-600 hover:bg-blue-100"
+                    )}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="mr-2">{item.icon}</span>
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+
+          {/* Desktop Navigation */}
+          <motion.header
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="hidden md:block border-b border-gray-200 pb-4"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white mr-3">
+                  <PieChart size={20} />
+                </div>
+                <h1 className="text-xl font-bold text-blue-700">
+                  Quality Check Dashboard
+                </h1>
+              </div>
+              <nav className="flex space-x-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={cn(
+                      "flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                      window.location.pathname === item.href
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                    )}
+                  >
+                    <span className="mr-2">{item.icon}</span>
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </motion.header>
+        </div>
+
+        {/* Form Content */}
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center">
+            <PieChart size={24} className="text-blue-600 mr-3" />
+            Defect Prediction
+          </h2>
           
           <div className="flex space-x-3">
             <Button
@@ -346,7 +445,7 @@ export default function DefectForm() {
           </form>
         </div>
 
-        {/* Error state */}
+        {/* Error state
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 animate-pulse">
             <div className="flex">
@@ -354,7 +453,7 @@ export default function DefectForm() {
               <p>{error}</p>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Success state with prediction */}
         {prediction !== null && (
@@ -402,13 +501,13 @@ export default function DefectForm() {
                       <span>High temperature may contribute to increased defects.</span>
                     </li>
                   )}
-                  {parseFloat(formData.Humidity) >= 60 && (
+                  {parseFloat(formData.Humidity) > 70 && (
                     <li className="flex items-start">
                       <AlertTriangle size={16} className="mr-2 text-yellow-500 mt-0.5" />
                       <span>High humidity levels detected, consider environmental controls.</span>
                     </li>
                   )}
-                  {parseFloat(formData.Machine_Usage_Hours) > 15 && (
+                  {parseFloat(formData.Machine_Usage_Hours) > 12 && (
                     <li className="flex items-start">
                       <AlertTriangle size={16} className="mr-2 text-yellow-500 mt-0.5" />
                       <span>Extended machine usage may require maintenance check.</span>

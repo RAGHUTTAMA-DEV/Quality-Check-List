@@ -10,10 +10,13 @@ import CheckList from './pages/Checklist/CheckList'
 import CheckListForm from './pages/Checklist/CheckListForm'
 import ItemsGet from './pages/items/itemsGet'
 import ItemsUpdate from './pages/items/UpdatingItems'
-import Tracker from './pages/Tracker/Tracker'
+
 import UserDash from './pages/UserDash'
 import Demo from './pages/demo'
 import ML from './pages/ml'
+import ImagePredictor from './pages/ImageUpload'
+import AdminDashboard from './pages/Adarsh'
+
 function App() {
   return (
     <div>
@@ -28,14 +31,17 @@ function App() {
 
             {/* <Route path='/checklist' element={<ChecklistManagement />} /> */}
             {/* Add more routes as needed */}
-            <Route path='/users' element={<PrivateProvider roles={['admin','operator']} ><UserTable/></PrivateProvider>} />
+            <Route path='/users' element={<UserTable/>}/>
             <Route path='/checkList' element={<CheckList/>}/>
             <Route path='/checkList/update' element={<CheckListForm/>}/>
             <Route path='/items' element={<ItemsGet/>}/>
             <Route path='/items/update' element={<ItemsUpdate/>}/>
-            <Route path='/tracker' element={<Tracker/>}/>
+          
             <Route path='userC' element={<UserDash/>}/>
             <Route path='/ml' element={<ML/>}/>
+            <Route path='/image' element={<ImagePredictor/>}/>
+            <Route path='/admin' element={<AdminDashboard/>}/>
+            
           </Routes>
         </AuthProvider>
       </BrowserRouter>
